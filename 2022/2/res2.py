@@ -1,6 +1,6 @@
 import numpy as np 
 
-with open('input', 'r') as f: 
+with open('input2', 'r') as f: 
     text=f.readlines()
     f.close()
     
@@ -27,12 +27,22 @@ for index,Zug in enumerate(text):
             Spielbuch[index,2]=3
             
     match Zug.split()[1]: # Ich
-        case 'X': 
-            Spielbuch[index,3]=1
-        case 'Y': 
-            Spielbuch[index,3]=2
-        case 'Z':
-            Spielbuch[index,3]=3
+        case 'Z':         # Need to win            
+            if Spielbuch[index,2]<3: 
+                Spielbuch[index,3]=Spielbuch[index,2]+1
+            if Spielbuch[index,2]==3: 
+                Spielbuch[index,3]=1
+                
+        case 'Y':          # Need to draw
+            Spielbuch[index,3]=Spielbuch[index,2]
+            
+        case 'X':          # Need to loose 
+            
+            if Spielbuch[index,2]==1:
+                Spielbuch[index,3]=3
+            if Spielbuch[index,2]>1: 
+                Spielbuch[index,3]=Spielbuch[index,2]-1
+            
             
 
 # Verteile Punkt nach Zug Wertiggkeit 
