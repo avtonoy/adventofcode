@@ -11,7 +11,7 @@ for line in range(len(text)):
 text=text[0]
     
 # Wie viel aufeinander folgende Buchstaben dürfen nicht gleich sein. 
-Anzahlverschieden=4
+Anzahlverschieden=14
 Vergleichstring=''
 
 
