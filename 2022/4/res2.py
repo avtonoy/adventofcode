@@ -38,11 +38,10 @@ for index,line in enumerate(text):
     
     
 # Prüfe Einschluss der zweiten Gruppe von der ersten Gruppe
-LogischerEinschlussGruppe1=np.logical_or(PaarMatrix[:,0]<=PaarMatrix[:,2], PaarMatrix[:,1]>=PaarMatrix[:,3])
+LogischerEinschlussGruppe1=np.logical_and( PaarMatrix[:,1]>=PaarMatrix[:,2],PaarMatrix[:,1]<=PaarMatrix[:,3])
 # Prüfe Einschluss der ersten Gruppe seitens der zweitens Gruppe 
-LogischerEinschlussGruppe2=np.logical_or(PaarMatrix[:,2]<=PaarMatrix[:,0], PaarMatrix[:,3]>=PaarMatrix[:,1])
-
+LogischerEinschlussGruppe2=np.logical_and( PaarMatrix[:,3]>=PaarMatrix[:,0],  PaarMatrix[:,3] <= PaarMatrix[:,1])
 # Doppelte Einschlüsse vermeiden
-LogischerEinschluss=np.logical_or(LogischerEinschlussGruppe1,LogischerEinschlussGruppe2)
+LogischerEinschluss=np.logical_or( LogischerEinschlussGruppe1, LogischerEinschlussGruppe2)
 
 print(sum(LogischerEinschluss))
