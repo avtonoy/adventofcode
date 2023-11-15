@@ -115,5 +115,15 @@ for key in Katalog.keys():
         Speicherkatalog100000.update({key: Katalog[key]['size']})
         Speicher=Speicher+Katalog[key]['size']
 
-print(Speicherkatalog100000)
-print(Speicher)
+totalspace=70000000
+needspace=30000000
+avlspace=totalspace-Katalog['/']['size']
+candspace=totalspace #InitKandspace
+
+for key in Katalog.keys(): 
+    if Katalog[key]['type'] == 'dir': 
+        if avlspace+Katalog[key]['size']>=needspace and candspace>=Katalog[key]['size']:
+            candspace=Katalog[key]['size']
+            cand=key
+print(cand)
+print(candspace)
