@@ -2,7 +2,7 @@ import numpy as np
 
 
 
-with open('inputtest', 'r') as f:
+with open('input', 'r') as f:
     text=f.readlines() 
     f.close()
     
@@ -106,9 +106,6 @@ def ScoreCalc(index0,index1):
     
     score=1
     for number in value: 
-        if number==0: 
-            score=score*1
-        else:
             score=score*number 
     
     return score
@@ -120,3 +117,5 @@ for index0 in range(Waldmat.shape[0]):
     for index1 in range(Waldmat.shape[1]):
         WaldmatValue[index0,index1]=ScoreCalc(index0,index1)
             
+            
+print(WaldmatValue.max())
