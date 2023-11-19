@@ -15,6 +15,7 @@ handle=False
 # Startwert für X
 X=1
 
+
 class clock_class: 
     def __init__(self) -> None:
         self.state='low'    #low ascend high descend
@@ -102,13 +103,64 @@ class frqlogger_class():
             self.signalstrenght.append(clock.cyclecounter * X)
             self.nextmeasure += self.frqsteps
         
+class drawer_class():
+    def __init__(self) -> None:
+        self.drawve=[]
+        self.drawoffset=1
+        self.pixelperclmn=40 
+        self.startpixel=0
+        self.firstlineforward=40
+        self.nextlinejumb=40
+        self.cycleoffset=1 
+        self.offsetnetxjumb=41
+        
+    def draw(self,clock,X):
+        # ist nur aktiv bei aufsteigender flanke 
+        if clock.state=='ascend':
+            cyclepixel=self.Cycleoffseter(clock)
             
+            if X+self.drawoffset >= cyclepixel  and X-self.drawoffset <= cyclepixel: 
+                self.drawve.append('#')
+            else: 
+                self.drawve.append('.')
+    
+    def Cycleoffseter(self,clock):
+        
+        if clock.cyclecounter == self.offsetnetxjumb: 
+            self.offsetnetxjumb+=self.pixelperclmn
+            self.cycleoffset+=self.pixelperclmn
+        
+
+            
+        return (clock.cyclecounter-self.cycleoffset)
+
+            
+    def printer(self): 
+        
+        #leerzeile 
+        print()
+        # erster line forward 
+        Indexlineforward=self.firstlineforward
+        
+        for index,pixel in enumerate(self.drawve): 
+            print(pixel,end='')
+            
+            if index+1 == Indexlineforward: 
+                # lineforward
+                print()
+                Indexlineforward+=self.pixelperclmn
+        
+        print()
+                    
+
 
 
     
 decoder=decoder_class(text)
 clock=clock_class()
 frqlogger=frqlogger_class()
+drawer=drawer_class()
+
 
 while decoder.Interuptor!=True:
     clock.tick()
@@ -116,6 +168,8 @@ while decoder.Interuptor!=True:
         worker=decoder.fetch(worker_class)
         if decoder.Interuptor:
             break
+    
+    drawer.draw(clock,X)
     worker.do(clock)
     frqlogger.measure(clock)
     
@@ -126,3 +180,5 @@ print(frqlogger.frq)
 print(frqlogger.frqmeasure)
 print(frqlogger.signalstrenght)
 print(sum(frqlogger.signalstrenght))
+
+drawer.printer()
