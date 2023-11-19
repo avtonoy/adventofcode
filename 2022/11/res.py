@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-with open('inputtest', 'r') as f:
+with open('input', 'r') as f:
     text=f.readlines() 
     f.close()
     
@@ -26,7 +26,9 @@ class monkey():
         
         self.itemschecks=0 
         
-        self.boredlevel=3
+        self.boredlevel=1
+        self.supermoduli=int 
+        
         
     
     def do(self,Monkeys):
@@ -52,12 +54,14 @@ class monkey():
                 Operation = self.operation[3]
                 if Operation == '*': 
                     C=A*B
+                    Cmod=A*(B%self.test)
                 if Operation == '+':
                     C=A+B 
-                    
+                    Cmod=A+(B%self.test)
                 # bored in account 
-                C=math.floor(C/self.boredlevel)
+                # C=math.floor(C/self.boredlevel)
                 # Bestimmung wohin gethrowt wird                
+                
                 
                 if C%self.test == 0: 
                     throw=self.truethrow
@@ -66,9 +70,10 @@ class monkey():
                 
                 self.itemschecks+=1
                 
-                Monkeys[throw].items.append(C)
+                Monkeys[throw].items.append(C%self.supermoduli)
             # Itemliste wird geleert
             self.items=[]
+            # self.boredlevel+=1
             
                     
 
@@ -102,22 +107,42 @@ def builtMonkeyhouse(text):
                 
             elif line.split(':')[0].__contains__('If false'):
                 Monkeyhouse[-1].falsethrow=int(line.split()[5])
-
+    
+    # calc and set supermoduli
+    supermoduli=1
+    for Monkey in Monkeyhouse:
+        supermoduli=Monkey.test*supermoduli
+    for Monkey in Monkeyhouse: 
+        Monkey.supermoduli=supermoduli
+        
     return Monkeyhouse
 
-Monkeys=builtMonkeyhouse(text)
+def monkeycircle(nRound):
+    Monkeys=builtMonkeyhouse(text)
+    for round in range(nRound):
+        for Monkey in Monkeys:
+            Monkey.do(Monkeys)
+    A=[]
+    for Monkey in Monkeys: 
+        A.append(Monkey.itemschecks)
+        A.sort()
+    print(A[-1]*A[-2])
+        
+    return Monkeys[2].itemschecks
 
-# Monkeys[0].do(Monkeys)
-# Monkeys[1].do(Monkeys)
-# Monkeys[2].do(Monkeys)
-for round in range(20):
-    for Monkey in Monkeys:
-        Monkey.do(Monkeys)
+print(monkeycircle(10000))
 
-A=[]
-for Monkey in Monkeys: 
-    print(Monkey.itemschecks)
-    A.append(Monkey.itemschecks)
 
-A.sort()
-print (A[-1]*A[-2])
+
+# for round in range(20):
+#     for Monkey in Monkeys:
+#         Monkey.do(Monkeys)
+
+# # A=[]
+# # for Monkey in Monkeys: 
+#     print(Monkey.itemschecks)
+#     A.append(Monkey.itemschecks)
+
+# # A.sort()
+# # print()
+# # print (A[-1]*A[-2])
