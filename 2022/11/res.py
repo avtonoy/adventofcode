@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 
-with open('input', 'r') as f:
+with open('inputtest', 'r') as f:
     text=f.readlines() 
     f.close()
     
@@ -10,175 +11,113 @@ with open('input', 'r') as f:
 for line in range(len(text)): 
     text[line]=text[line].rstrip('\n')
     
-# Wird auf True gesetzt sobald ein Programm aktiv ist 
-handle=False
-# Startwert für X
-X=1
+    
+    
 
-
-class clock_class: 
+class monkey():
     def __init__(self) -> None:
-        self.state='low'    #low ascend high descend
-        self.cyclecounter=0 
+        self.name=''
+        self.items=[]
+        self.operation=[]
+        self.truethrow=int 
+        self.falsethrow=int 
+        self.test=int 
+        
+        
+        self.itemschecks=0 
+        
+        self.boredlevel=3
         
     
-    def tick(self):
-        match self.state:
-            case 'low':
-                self.state='ascend'  # fetch and cycle up 
-                self.cyclecounter+=1
-            case 'ascend': 
-                self.state='high'  # FRQ logging
-            case 'high': 
-                self.state='descend' # Excecute
-            case 'descend':
-                self.state='low'
-            
-    # low -> ascend: fetching
+    def do(self,Monkeys):
+        if len(self.items)>0: 
+            Items=self.items.copy()
+            # Liste der throws
 
-class decoder_class: 
-    def __init__(self,text) -> None:
-        self.Interuptor=False
-        self.CMD=text
-    
-    def fetch(self,worker):
-        if len(self.CMD)>0:
-            return worker(self.CMD.pop(0))
-        else: 
-            self.Interuptor=True
         
-        
-class worker_class: 
-    def __init__(self,CMD) -> None:
-        global handle
-        handle = True
-        A=CMD.split()
-        if A[0]=='addx':
-            self.type='adder'
-            self.AddValue=int(A[1])
-            self.cycle=0 
-            self.cycletowork=2
-        
-        if A[0]=='noop':
-            self.type='noop'
-            self.cycle=0
-            self.cycletowork=1
-    
-    def do(self,clock): 
-        if clock.state=='ascend': 
-            self.cycle+=1
-        if clock.state=='descend': 
-            if self.type=='noop': 
-                self.noop()
-            if self.type=='adder':
-                self.adder()
+            for item in Items:
+                # Operand A 
+                if self.operation[2]=='old': 
+                    A=item
+                else: 
+                    A=int(self.operation[2])
                 
+                # Operand B
+                if self.operation[4]=='old': 
+                    B=item
+                else: 
+                    B=int(self.operation[4])
+                    
+                # Oberation 
+                Operation = self.operation[3]
+                if Operation == '*': 
+                    C=A*B
+                if Operation == '+':
+                    C=A+B 
+                    
+                # bored in account 
+                C=math.floor(C/self.boredlevel)
+                # Bestimmung wohin gethrowt wird                
                 
-    def noop(self): 
-        if self.cycle >= self.cycletowork: 
-            # do nothing return handel 
-            global handle 
-            handle = False
-    
-    def adder(self): 
-        if self.cycle >= self.cycletowork: 
-            global X
-            X=X+self.AddValue
-            global handle 
-            handle = False
+                if C%self.test == 0: 
+                    throw=self.truethrow
+                else: 
+                    throw=self.falsethrow 
+                
+                self.itemschecks+=1
+                
+                Monkeys[throw].items.append(C)
+            # Itemliste wird geleert
+            self.items=[]
             
-class frqlogger_class(): 
-    def __init__(self) -> None:
-        self.nextmeasure=20
-        self.frqsteps=40
-        self.frq=[]
-        self.frqmeasure=[]
-        self.signalstrenght=[]
-
-    def measure(self,clock):
-        if clock.cyclecounter >= self.nextmeasure and clock.state=='high':
-            global X
-            self.frq.append(clock.cyclecounter)
-            self.frqmeasure.append(X)
-            self.signalstrenght.append(clock.cyclecounter * X)
-            self.nextmeasure += self.frqsteps
-        
-class drawer_class():
-    def __init__(self) -> None:
-        self.drawve=[]
-        self.drawoffset=1
-        self.pixelperclmn=40 
-        self.startpixel=0
-        self.firstlineforward=40
-        self.nextlinejumb=40
-        self.cycleoffset=1 
-        self.offsetnetxjumb=41
-        
-    def draw(self,clock,X):
-        # ist nur aktiv bei aufsteigender flanke 
-        if clock.state=='ascend':
-            cyclepixel=self.Cycleoffseter(clock)
-            
-            if X+self.drawoffset >= cyclepixel  and X-self.drawoffset <= cyclepixel: 
-                self.drawve.append('#')
-            else: 
-                self.drawve.append('.')
-    
-    def Cycleoffseter(self,clock):
-        
-        if clock.cyclecounter == self.offsetnetxjumb: 
-            self.offsetnetxjumb+=self.pixelperclmn
-            self.cycleoffset+=self.pixelperclmn
-        
-
-            
-        return (clock.cyclecounter-self.cycleoffset)
-
-            
-    def printer(self): 
-        
-        #leerzeile 
-        print()
-        # erster line forward 
-        Indexlineforward=self.firstlineforward
-        
-        for index,pixel in enumerate(self.drawve): 
-            print(pixel,end='')
-            
-            if index+1 == Indexlineforward: 
-                # lineforward
-                print()
-                Indexlineforward+=self.pixelperclmn
-        
-        print()
                     
 
-
-
+def builtMonkeyhouse(text): 
     
-decoder=decoder_class(text)
-clock=clock_class()
-frqlogger=frqlogger_class()
-drawer=drawer_class()
+    Monkeyhouse=[]
+        
+    for line in text: 
+        if len(line.split())>=2:
+            
+            if line.split()[0].__contains__('Monkey'): 
+                Monkeyhouse.append(monkey())
+                Monkeyhouse[-1].name = line.split()[1].split(':')[0]
 
+            elif line.split(':')[0].__contains__('Starting items'):
+                items=line.split(':')[1].split(',')
+                for item in items:
+                    Monkeyhouse[-1].items.append(int(item))
+                    
+            elif line.split(':')[0].__contains__('Operation'):
+                items=line.split(':')[1].split(' ')
+                items.pop(0)
+                for item in items: 
+                    Monkeyhouse[-1].operation.append(item)
+            
+            elif line.split(':')[0].__contains__('Test'):
+                Monkeyhouse[-1].test=int(line.split()[3])
+                
+            elif line.split(':')[0].__contains__('If true'):
+                Monkeyhouse[-1].truethrow=int(line.split()[5])
+                
+            elif line.split(':')[0].__contains__('If false'):
+                Monkeyhouse[-1].falsethrow=int(line.split()[5])
 
-while decoder.Interuptor!=True:
-    clock.tick()
-    if handle !=True and clock.state=='ascend': 
-        worker=decoder.fetch(worker_class)
-        if decoder.Interuptor:
-            break
-    
-    drawer.draw(clock,X)
-    worker.do(clock)
-    frqlogger.measure(clock)
-    
-print(X)
-print(clock.cyclecounter)
+    return Monkeyhouse
 
-print(frqlogger.frq)
-print(frqlogger.frqmeasure)
-print(frqlogger.signalstrenght)
-print(sum(frqlogger.signalstrenght))
+Monkeys=builtMonkeyhouse(text)
 
-drawer.printer()
+# Monkeys[0].do(Monkeys)
+# Monkeys[1].do(Monkeys)
+# Monkeys[2].do(Monkeys)
+for round in range(20):
+    for Monkey in Monkeys:
+        Monkey.do(Monkeys)
+
+A=[]
+for Monkey in Monkeys: 
+    print(Monkey.itemschecks)
+    A.append(Monkey.itemschecks)
+
+A.sort()
+print (A[-1]*A[-2])
