@@ -37,22 +37,29 @@ def CreateMat (text):
     
     maxidxx=sx-1
     maxidxy=sy-1
-    return (HilMat,maxidxx, maxidxy,startpoint,endpoint)
+    log = []
+    log.append(startpoint)
+    return (HilMat,maxidxx, maxidxy,startpoint,endpoint,log)
 
 class walker_class():
     def __init__(self,HilMat) -> None:
         self.HilMat=HilMat[0]
         self.maxidxx=HilMat[1]
         self.maxidxy=HilMat[2]
-        self.starpoint=HilMat[3]
+        self.startpoint=HilMat[3]
         self.endpoint=HilMat[4]
         
-        self.log=[]
-        self.log.append((self.starpoint))
+        self.log=HilMat[5]
+        
         self.possteps='v>^<'        
         self.steps=0
         self.success=False
         self.deadend=False
+    
+    def HilMatselfConstruct(self): 
+        HilMat=(self.HilMat , self.maxidxx, self.maxidxy, self.startpoint, self.endpoint,self.log)
+
+        return HilMat
     
     def step(self,previous,step):
         
@@ -76,7 +83,7 @@ class walker_class():
         if self.step_check():
             if self.steep_check():
                 for direction in self.possteps:
-                    A.append(copy.deepcopy(self))
+                    A.append(walker_class(self.HilMatselfConstruct()))
                     idx = len(A)-1
                     A[idx].step(self,direction)
                 
@@ -125,7 +132,7 @@ walker=walker_class(CreateMat(text))
 
 A=[]
 for step in walker.possteps:
-    A.append(copy.deepcopy(walker))
+    A.append(walker)
     idx=len(A)-1
     A[idx].step(walker,step)
     
